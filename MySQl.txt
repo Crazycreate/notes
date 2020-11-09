@@ -1,0 +1,372 @@
+1.操作库
+show databases;
+show create 数据库名;//查看字符集
+alter database 名称 character set 字符集名称；
+drop database if exists 数据库名称；
+select database();//查询当前正在使用的数据库名称
+use 数据库名称；
+插入数据：
+INSERT INTO table_name (列1, 列2,...) VALUES (值1, 值2,....)
+
+
+2.操作表 CRUD
+1.C
+create table 表名(
+列名1 数据类型1，
+列名2 数据类型2，
+列名3 数据类型3，
+...
+列名n 数据类型n
+);
+数据类型：int,double,data(yy-mm-dd),datetime yy-mm-dd hh ss,   timestamp:不赋值默认为当前系统时间；varchar:字符串，varchar(20)
+double(4，1)(最多四位，取一位小数)
+
+例：
+create table student(
+       id int,
+       name varchar(20),
+       age int,
+       score double(4,1),
+       birthday date,
+       insert_time timestamp
+);
+
+复制表：create table stu like student;
+
+2.R
+show tables;//查询数据库中的表
+desc 表名；//查询表结构
+3.U
+U(Update):修改
+1.该表名
+alter table 表名 rename to 新的表名；
+2.该表的字符集
+alter table 表名 character set utf8;
+3.添加一列
+alter table 表名 add 列名 数据类型；
+4.修改列名称 类型
+alter table 表名 change 原列名 新列名 数据类型；
+alter table 表名 modify 列名 数据类型；
+5.删除列
+alter table 表名 drop 列名;
+4.D
+drop table  表名；
+drop table if exists 表名；
+
+
+
+DML:增删改表中的数据
+1.添加数据
+insert into 表名(列1，列2，列3，列n)  values(值1，值2，值3，..值n)；
+（1）如果表名后，不定义列名，则默认给所有列添加值
+（2）除了数字类型，其他类型需要引号。单双都可以
+2.删除数据：
+delete from 表名[where 条件]
+注：如果不加条件，则会删除所有记录
+truncate table 表名; 删除表后，新建一个表，效率高
+3.修改数据
+update 表名 set 列名1 = 值1,列名2 = 值2,........[where 条件](where 是条件限定，具体到哪一个)
+注：如果不加条件，则会把表中的数据全部修改
+
+
+DQL:查询表中的记录
+select * from 表名；
+   1.语句：
+     select 字段【列】表   from 表名   where 条件列表 group by 分组字段 having 分组之后 order by 排序字段 limit 分页排序；
+     
+     SELECT DISTINCT age FROM stu1;//去除重复字段
+     SELECT NAME ,math ,english, math + IFNULL(english,0) FROM stu1;//查询m+e的结果之和；
+     SELECT NAME ,math ,english, math + IFNULL(english,0) AS 总分 FROM stu1;//查询m+e的结果之和；//重命名
+
+where 条件查询，
+(1).SELECT NAME FROM stu1 WHERE age > 20;// > 
+(2)SELECT NAME FROM stu1 WHERE age >= 20 AND age <= 30;  //【加条件是and或者or】
+    SELECT NAME FROM stu1 WHERE age between 20 and 30;
+(3)SELECT NAME FROM stu1 WHERE age = 20 or age = 30 or age = 32;
+    SELECT NAME FROM stu1 WHERE age in (20,22,18);//【*】
+(4)SELECT NAME FROM stu1 WHERE english is NULL;//判断为空
+(5)like模糊查询：
+     占位符：
+               _:单个任意字符
+               %:任意多个字符
+例如：
+SELECT * FROM stu1 WHERE NAME LIKE 'a%';//查询以a开头的名字。
+SELECT * FROM stu1 WHERE NAME LIKE '_b%';//第二个字为b的名字
+SELECT * FROM stu1 WHERE NAME LIKE '_b%';//第二个字为b的名字
+SELECT * FROM stu1 WHERE NAME LIKE '___';//查询名字为三个字的
+【SELECT * FROM stu1 WHERE NAME LIKE '%a%';//名字中包含a的】
+
+1.查询语句：
+1.排序查询：
+    order by 字句
+    order by 排序字段1 排序方式1,排序字段2 排序方式2,...
+注：排序方法
+ASC:升序，默认的。
+DESC:降序，
+例如：
+SELECT * FROM stu1 ORDER BY age DESC，id ASC;
+当如果有多个排序条件，则当前边的条件值一样时，才会判断第二个条件。
+2.聚合函数：将一列数据作为一个整体，进行纵向的计算。
+      1.count:计算个数
+                  一般选择非空的列：主键
+      2.max:最大值
+      3.min：计算最小值
+      4.sum: 求和
+      5.avg：平均值
+例如：
+SELECT COUNT(NAME) FROM stu1;
+SELECT SUM(age) FROM stu1;
+SELECT AVG(age) FROM stu1;
+
+注：聚合函数的计算，排除null;
+     解决方案:IFUNLL函数
+3.分组查询：
+         group by 分组字段；
+         SELECT gendar,AVG(age),COUNT(id) FROM stu1 GROUP BY gendar;
+
+	SELECT gendar,AVG(age),COUNT(id) FROM stu1 WHERE age > 20 GROUP BY gendar HAVING COUNT(id) > 1;
+
+注：(1)分组之后查询字段:只能加分组字段，聚合函数
+       (2)where 在分组之前进行限定条件，不满足则不分组，having 在分组之后进行限定，如果不满足条件，则不会被查询出来。
+where 后不可以跟聚合函数，having可以。
+4.分页查询；
+   (1)limit 开始的索引，每页查询的条数；
+      SELECT * FROM stu1 LIMIT 0,3;//从0开始，查3条记录
+   (2)这里的分页查询只针对的时MySQL;
+
+2.约束：对表中的数据进行限定，保证数据的正确性、有效性和完整性。
+分类：
+      (1)主键约束：primary key
+	1.注意：非空且唯一，
+	             【一张表只能有个一字段为主键】主键就是表中记录的唯一标识
+	2.在创建的时候添加主键：
+	 CREATE TABLE stu(
+	id INT PRIMARY KEY,
+	NAME VARCHAR(20)
+	);
+	3.删除主键：
+	ALTER TABLE stu DROP PRIMARY KEY;
+	4.创建后添加
+	ALTER TABLE stu MODIFY id INT PRIMARY KEY;
+	5.自动增长：
+	CREATE TABLE stu(
+	id INT PRIMARY KEY auto_increment, //给id添加主键约束,、并且自增长。
+	NAME VARCHAR(20)
+	);auto_increament;
+		INSERT INTO stu VALUES(NULL,'c');//直接插入后自动增长
+	删除自动增长：ALTER TABLE stu MODIFY id INT;
+	添加自动增长：ALTER TABLE stu MODIFY id INT 
+      (2)非空约束：not null
+	CREATE TABLE stu(
+	id INT,
+	NAME VARCHAR(20) NOT NULL//创建表时添加非空约束
+                );
+                alter table stu modify name varchar(20) not null;//创建之后进行约束 
+	
+      (3)唯一约束：unique
+	CREATE TABLE stu(
+	id INT,
+	NAME VARCHAR(20) NOT NULL,
+	phone_num VARCHAR(20) UNIQUE
+	);
+       删除唯一约束：
+       alter table stu drop index phone_num;
+       alter table stu modify phone_num varchar(20) unique;//创建之后进行约束 
+      (4)外键约束：foregin key
+	1.在创建表时，可以添加外键
+	create table 表名(
+	...
+	外键列
+	constraint 外键名称 foreign key (外键列名称) references 主表名称(主表列名称)//被关联的另一个表的主表列
+	);
+	例如：
+	CREATE TABLE stu(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	NAME VARCHAR(20),
+	class_id INT,
+	CONSTRAINT st_cls_fk FOREIGN KEY (class_id) REFERENCES class(id)
+	);
+	2.删除外键、
+	ALTER TABLE stu DROP FOREIGN KEY st_cls_fk;
+	3.建立表之后再添加外键
+	ALTER TABLE stu ADD CONSTRAINT st_cls_fk FOREIGN KEY (class_id) REFERENCES class(id);
+        （5）级联操作//级联更新，当被关联的表变化时，关联者外键值也更新。
+	ALTER TABLE stu ADD CONSTRAINT st_cls_fk FOREIGN KEY (class_id) 
+	REFERENCES class(id) ON UPDATE CASCADE;
+	2.级联删除：//删除一起删除
+	ALTER TABLE stu ADD CONSTRAINT st_cls_fk FOREIGN KEY (class_id) 
+	REFERENCES class(id) ON DELETECASCADE;
+3.多表之间的关系
+（1）	1.一对一的关系
+	   人和身份证
+	2.一对多(多对一)的关系
+	   部门和员工
+	3.多对多的关系
+	   学生和课程
+(2)实现关系:
+	1.一对多：部门与员工，再多的一方（员工）建立外键，指向一（部门）的一方。
+	2.多对多：学生与课程，实现方法·：借助第三张中间表，中间表至少包含两个字段，这两个字段作为第三张表的外键，分别指向两张表的主键。
+	3.一对一：人和身份证，一对一关系的实现，可以在任意一方添加【唯一】外键指向任何一方。    
+CREATE TABLE tab_category(
+	cid INT PRIMARY KEY AUTO_INCREMENT,
+	cname VARCHAR(200) NOT NULL UNIQUE
+);
+CREATE TABLE tab_route(
+	rid INT PRIMARY KEY AUTO_INCREMENT,
+	rname VARCHAR(200) NOT NULL UNIQUE,
+	price DOUBLE,
+	cid INT,
+	FOREIGN KEY (cid) REFERENCES tab_category(cid)
+);
+CREATE TABLE tab_user(
+	uid INT PRIMARY KEY AUTO_INCREMENT,
+	username VARCHAR(200) NOT NULL UNIQUE,
+	PASSWORD VARCHAR(200) NOT NULL
+);
+CREATE TABLE tab_favorite(
+	rid INT ,
+	uid INT,
+	PRIMARY KEY(rid,uid),-- 联合主键
+	FOREIGN KEY (rid) REFERENCES tab_route(rid),
+	FOREIGN KEY (uid) REFERENCES tab_user(uid)	
+);
+
+4.范式：设计数据库时，需要遵守一些规范，以设计出合理的数据库，这些不同的规范要求称为不同的范式
+	分类:(1)第一范式（1NF）:每一列都是不可分割的原子数据项//只有一列名称对应一列。
+	        (2)第二范式（2NF）:在1NF的基础上，非码属性必须完全依赖于码（在1NF的基础上消除非主属性对主码的部分函数依赖）//消除了数据冗余
+		1.函数依赖：A->B,如果通过A属性(属性组)的值，可以确定唯一B属性的值，则称B依赖于A
+			例如：学号->姓名（通过学号可以确定一个学生）；（学号和课程名称)（属性组）可以确定唯一一个分数
+		2.完全函数依赖：A->B,如果是A一个属性组，则B的属性值确定需要依赖于A属性组中所有的属性值（缺一不可）
+			例如：（学号和课程名称)->分数
+		3.部分函数依赖：A->B，如果A是一个属性组，则B的属性值确定只需要依赖于A属性组中的某一些值即可。
+			例如：（学号，课程名称)->姓名
+		4.传递函数依赖：A->B,B->C,如果通过A属性组（属性组）的值，可以确定唯一一个B的属性值，再通过B的属性（属性组）的值
+可以确定唯一一个C属性的值，则称C传递依赖于A。
+		例如：学号->系名，系名->系主任
+		5.码:如果在一张表中，一个属性或属性组，被其他所有属性所完全依赖，则称这个属性（属性组）为该表的码
+		例如：改表中的码为：（学号，课程名称）
+		主属性：码属性组中的所有属性
+		非码属性：除去码属性组中的其他属性
+	        (3)第三范式（3NF）:在2NF的基础上，任何非主属性不依赖其他非主属性（在2NF的基础上消除传递依赖）
+
+5.数据库的备份与还原
+	命令行：
+	    （1）mysqldump -u用户名 -p密码 需要备份的数据库 > 保存的路径//备份
+	    （2)通过备份还原数据库：先创建数据库(create)，使用数据库(use)，source 文件目录 a.sql;
+	图形化工具：
+		
+
+
+多表查询：
+SELECT * FROM tab_route,tab_category;直接查询出来的时两个集合的所有组合情况
+1.内连接查询
+	(1)隐式内连接：使用where条件消除无用数据
+例如：
+SELECT
+	t1.`rname`,-- 
+	t2.`cname` -- 
+FROM
+	tab_route t1, 
+	tab_category t2
+WHERE
+	t1.`cid` = t2.`cid`;
+	(2)显式内连接：
+		语法：select 字段列表 from 表名1 inner join 表名2 on 条件//
+例如：SELECT * FROM tab_route INNER JOIN tab_category ON tab_route.`cid` = tab_category.`cid`;
+	(3)内连接查询：
+	1.从哪些表中查数据
+	2.查询条件是什么
+	3.查询哪些字段
+2.外连接查询
+	(1)左外连接
+	语法：select 字段列表 from 表1 left join 表2 on 条件；
+	查询的是左表所有数据及其交集部分(左表数据都要有)//左表为t1
+	(2)右外连接
+	语法;select 字段列表 from 表1 right join 表2 on 条件；
+	查询的是右表所有数据及其交集部分(右表数据都要有)//右表为t2
+3.子查询
+	概念：查询中嵌套查询，称嵌套查询为子查询
+	SELECT * FROM tab_route WHERE tab_route.`price` = (SELECT MAX(price) FROM tab_route);//查询谁的价钱更高
+	
+	子查询的不同情况：
+	(1)子查询的结果是单行单列的
+	           *子查询可以作为条件，使用运算符去判断。
+	            例如：SELECT * FROM tab_route WHERE tab_route.`price` < (SELECT AVG(price) FROM tab_route);
+	(2)子查询的结果是多行单列的
+	           *子查询可以作为条件，使用运算符in来判断
+		SELECT cid FROM tab_category WHERE tab_category.`cname` = '黑域' OR tab_category.`cname` = '掩体';
+		SELECT * FROM tab_route WHERE tab_route.`cid` IN (SELECT cid FROM tab_category 
+		WHERE tab_category.`cname` = '黑域' OR tab_category.`cname` = '掩体');//查询黑域和掩体
+	(3)子查询的结果是多行多列的
+		*子查询可以作为一个虚拟的表，进行操作。
+		SELECT * FROM tab_route WHERE tab_route.`price` > 56.3;
+
+		SELECT * FROM tab_category t1, (SELECT * FROM tab_route WHERE tab_route.`price` > 56.3) t2
+		WHERE t1.`cid` = t2.cid;
+		也可以使用普通内连接：//进行查询两个表
+		SELECT  * FROM tab_category t1, tab_route t2 WHERE t1.`cid` = t2.`cid` AND t2.`price` > 56.3;
+
+练习：
+（1）当同一个表需要自关联查询时，可以进行起别名操作，当作两个表使用
+select
+	t1.name, t2.name
+from
+	emp t1, emp t2
+where 
+	t1.mgr = t2.'id';
+
+
+事务：如果一个包含多个步骤的业务操作，被事务管理，那么这些操作要么同时成功，要么同时失败。
+1.操作
+	*开始事务：start transaction //使用后，默认手动提交，如果不进行commit，数据不会保存。
+	*回滚：rollback
+	*提交事务：commit
+例如：
+START TRANSACTION;
+
+UPDATE account SET balance = balance - 500 WHERE id = 1;
+dsd-- 出错代码
+UPDATE account SET balance = balance + 500 WHERE id = 2;
+
+ROLLBACK;
+
+4.MySQL数据库中的事务默认自动提交
+	*一条DML(增删改)语句会自动提交一次事务。
+	*事务提交的两种方式：1.自动提交：默认 2.手动提交：需要开启事务，再提交
+Oracle数据库默认是手动提交的。
+
+事务的四大特征：1.原子性（不可分割的最小执行单位，要么同时成功，要不同时失败）
+2.持久性（当事务提交或是回滚后，数据库会持久化的保存数据）
+3.隔离性（多个数据之间，相互独立）
+4.一致性（事务操作前后，数据总量不变）
+
+隔离级别：1.read uncommitted 都未提及的
+2.read commited 读已提交的
+3.repeatable read 可重复读 //李四只有事务提交后，再查询才可看到变化
+4.serializable:串行化 可解决所有问题//因为将表进行了锁定
+
+脏读 ，不可重复读，幻读
+
+DQL:
+管理用户：
+创建：CREATE USER 'lisi'@'localhost' IDENTIFIED BY '123';
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

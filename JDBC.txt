@@ -1,0 +1,124 @@
+JDBC:Java DataBase Connectivity(Java数据库链接) java语言操作数据库
+JDBC:定义了一套操作所有关系型数据库的规则（接口）。各个数据库厂商去实现这套接口，提供数据库驱动jar包。我们可以使用这套接口（JDBC）
+编程，真正执行的代码是驱动jar包中的实现类。
+2.各个类·
+(1)DriverManager:驱动管理对象
+	1.注册驱动
+		static void registerDriver(Driver driver) ，向 DriverManager 注册给定驱动程序。 
+		写的是：Class.forName("com.mysql.jdbc.Driver");//会执行Driver的静态代码块，
+	2.获取数据库链接
+	*方法：static Connection getConnection(String url, String user, String password) ；试图建立到给定数据库 URL 的连接。
+	参数：
+		url:指定链接的路径
+		语法：jdbc:mysql://ip地址(域名):端口号/数据库名称
+		例子： Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3305/db1", "root", "root");
+(2)Connection：数据库链接对象
+	1.获取执行sql对象
+	*Statement createStatement（）
+	*PreparedStatement prepareStatement(String sql)
+	2.事务管理
+	*开启事务：setAutoCommit(boolean atuoCommit):调用该方法设置参数为false.即开启事务
+	*提交事务：commit()
+	*回滚事务：rollback()
+(3)Statement：执行sql的对象
+	1.执行sql
+	(1)boolean execute(String sql):可以执行任意sql  了解
+	(2)int executeupdate(String sql)  :执行DML（增删改）语句、DDL(表和库，create alter)语句
+	返回值为影响的行数
+	(3)ResultSet executedQuery(String sql):执行DQL(select)语句 返回的是结果集对象
+(4)ResultSset：结果集对象，封装查询结果
+	*next():游标向下移动一行
+	*getXxx():获取数据
+		*Xxx:代表数据类型 如：int getInt() String getString();
+		*参数：
+			1.int ：代表列的编号，从1开始 如：getString(1)
+			2.String:代表列名称 如：getDouble("balance")
+	注意使用步骤：1.游标向下移动一行 2.判断是否有数据（resultSet.next()判断是否是最后一行） 3.获取数据
+(5)PreparedStatement:：执行sql的对象
+	1.SQL注入问题，再拼接sql时，有一些sql的特殊关键字参与字符串的拼接，会造成安全性问题
+	2.sql = SELECT * FROM USER WHERE NAME = 'sdads' AND PASSWORD = '5165' OR 'a' = 'a';
+	3.解决sql注入问题：使用PreparedStatement对象来解决
+	4.预编译的sql:参数使用？作为占位符
+
+注意：后期都会使用PreparedStatement 来完成增删改查的所有操作
+	1.防止SQL注入
+	2.效率更高
+
+##抽取JDBC工具类：JDBCUtils
+*目的：简化书写
+*分析：1.注册驱动抽取 
+	2.抽取一个方法获取连接对象
+	*需求：不想传递参数，保证工具类的通用性
+	*解决：配置文件
+	3.抽取一个方法释放资源
+
+JDBC控制事务
+1.再执行SQL语句之前开启事务，setAutocommit()
+在所有sql执行结束后，commit 提交事务 
+在catch中rollback()回滚事务
+
+数据库连接池：本质是一个容器（集合），存放数据库链接的容器
+1.当系统初始化好以后，容器被创建，容器中会申请一些链接对象，当用户来访问数据库时，从容器中获取连接对象，用户访问完之后，会将连接对象
+归还给容器。
+优点：1.节约资源 2.高效
+
+2.实现：
+	（1）标准接口：DataSource javax.sql 包下，没有实现
+	getConnection //获取链接 Connection.close()//归还链接
+	（2）由数据库厂商来实现接口
+	
+3.C3p0:获取数据库连接对象：DataSource ds = new ComboPooledDataSource();
+4.Druid:获取数据库连接对象:
+Properties pro = new Properties();//需要手动加载配置文件
+InputStream is = Demo01Druid.class.getClassLoader().getResourceAsStream("druid.properties");
+pro.load(is);
+DataSource ds = DruidDataSourceFactory.createDataSource(pro);
+
+
+Spring JDBC
+Spring框架对JDBC的简单封装，提供了一个JDBCTemplate对象简化JDBC的开发
+方法：1.创建对象：JdbcTemplate template = new JdbcTemplate(JdbcUtils.getDataSource());
+2.调用方法完成CRUD操作
+*update():执行DML语句。增删改查
+*queryForMap()：查询结果将结果封装为map集合//{id=1, name=zhangsan, balance=500.0}
+	查询的结果集只能为一条记录
+*queryForList()：查询结果将结果封装为List集合//先将数据封装为map,再将map变为List
+[{id=1, name=zhangsan, balance=500.0}, {id=2, name=lisi, balance=1500.0}, {id=3, name=wocao, balance=6000.0}, {id=4, name=wangwu, balance=2000.0}]
+*query()：查询结果将结果封装为javaBean集合//自己定义的类
+	*query()的参数：RowMapper
+	一般我们使用BeanPropertyRowMapper实现类，可以完成数据到JavaBean的自动封装
+String sql = "select * from account";
+        List<Emp> list = template.query(sql, new BeanPropertyRowMapper<自定义类型>(类型.class));//【BeanPropertyRowMapper】
+        System.out.println(list);
+*queryForObject()：查询结果将结果封装为对象
+	一般用于聚合函数的查询
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

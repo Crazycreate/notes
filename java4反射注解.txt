@@ -1,0 +1,187 @@
+网络编程
+1.UDP:面向无连接的链接
+TCP:面向连接
+172.0.0.1   localhost本地主机
+端口号：类似于应用程序中的ip,用于找到某个程序
+
+2.Client/Server
+(1) socket.shutdownOutput//是防止阻塞，防止服务器端末尾读不到结束标记
+
+3.B/S模式
+注：当浏览器解析服务器写回的html页面的时候，页面中如如果有图片，那么浏览器就会单独的开启一个线程，读取服务器的图片，我们就让服务器处于监听状态，
+客户端没请求一次，服务器就回写一次
+
+
+函数式接口：@FunctionalInterface注解（用来规定只有一个方法）
+【有且仅有】一个抽象方法的接口。
+2.函数式接口作为方法参数
+3.函数时接口作为方法的返回值
+4.Predicate 中的and or negate方法就是 与 或 非
+
+
+Stream
+1.流的特点：Stream不会存储元素，而是按需计算
+可以进行内部迭代，因为中间操作会返回流的本身。
+2.延迟方法：返回值类型仍然是Stream接口自身类型的方法，因此支持链式调用
+终结方法：返回值不再是Stream接口自身的类型的方法，因此不再支持链式调用
+
+注意：Stream流只能使用一次。
+
+方法引用
+1.方法引用符 双冒号（::）
+如果Lambda要表达的函数方案已经存在于某个方法的现实中，那么可以通过双冒号来引用该方法作为lambda的替代。
+
+printString((s)->{
+            System.out.println(s);//使用的方法已经存在
+        });
+        
+
+      printString(System.out::println);
+    }
+    public static void printString(Printable p){
+        p.print("Hely ");
+    }
+可以理解为对lambda表达式的进一步简化，因为方法已经被别人写过了，不用自己再写一遍了，所以可以直接引用别人的方法
+自己定义的方法也可以，super this关键字调用。
+
+====================================
+====================================
+====================================
+====================================
+
+Junit单元测试
+@Test
+@Before 进行初始化时操作
+@After程序结束后进行释放资源
+
+====================================
+====================================
+====================================
+====================================
+
+【反射】：框架设计的灵魂
+将类的各个组成部分封装为其他对象，这就是反射机制
+优点;1.可以在程序运行过程中，操作这些对象
+2.可以解耦，提高程序的可扩展性
+
+2.获取class对象的方式
+Class cls = Class.forName("cn.day11.domain.Person")；//多用于配置文件中，将类名定义在配置文件中。
+Class cls2 = Person.class；//多用于参数传递
+
+Person p = new Person();//
+Class cls3 = p.getClass()；
+结论：同一字节码文件（*。class）在一次程序运行过程中，只会被加载一次，不论通过哪一种方法获取的class对象都是同一个
+
+3.Class对象功能：
+（1）获取成员变量们：
+Field[] fields = personClass.getFields();//获取public的成员变量
+Field a = personClass.getField("a");/获取指定成员public的成员变量
+a.set(p,"assad");//设置值
+
+Field[] declaredFields = personClass.getDeclaredFields();获取所有的成员变量
+Field d = personClass.getDeclaredField("a");/获取指定成员的成员变量（不在乎修饰符）
+
+获取构造方法们：
+Constructor constructor = personClass.getConstructor(String.class, int.class);
+
+获取成员方法们：
+Method eat_Method = personClass.getMethod("eat");
+        Person p = new Person();
+        eat_Method.invoke(p);
+
+创建对象
+Class cls = Class.forName(className);
+        Object o = cls.newInstance();
+
+Field：成员变量
+忽略访问修饰符（private）的安全检查，d.setAccessible(true)//暴力反射
+
+
+Constructor：构造方法
+创建对象：Object person = constructor.newInstance("aa", 20);
+
+Method:
+执行方法：Method eat_Method = personClass.getMethod("eat");
+                 Person p = new Person();
+                 eat_Method.invoke(p);
+
+====================================
+====================================
+====================================
+====================================
+
+
+注解：说明程序，给计算机看的
+作用：
+编写文档：通过代码里标识的注解生成文档【生成文档doc文档】
+代码分析：通过代码里标识的注解对代码进行分析【使用反射】
+编译检查：通过代码里标识的注解让编译器能够实现基本的编译检查【Override】
+
+
+JDK中预定义的一些注解
+@Override :检查被该注解标注的方法是否是继承自父类的
+@Oeprecated 该注解标注的内容，表示已过时
+@SupperessWarnings 压制警告 @SuppressWarnings("all") //一般传递 all 参数，压制所有警告
+
+自定义注解
+格式：
+元注解
+public @interface 注解名称{
+}
+
+本质：注解本质上就是一个接口，该接口默认继承Annotation接口
+public interface MyAnno extends java.lang.annotation.Annotation{}
+ 
+属性：接口中可以定义的【抽象方法】
+要求：属性的返回值类型
+1.基本数据类型，String，枚举，注解，以上类型的数组
+2.定义了属性，在使用时需要赋值
+（1）如果定义属性时，使用default关键字给属性默认初始化值，则使用注解时，可以不进行属性的赋值
+String name() default "aaa";
+（2）如果只有一个属性需要赋值，并且属性的名称是value，则value可以省略，直接定义之即可
+//注解赋值
+@MyAnno(value = 12,arr = {"aa","bb"},my = @MyAnno2)
+
+元注解：用于描述注解的注解
+1.@Target：描述注解能够作用的位置
+  ElementType的取值：
+         （1）TYPE可以作用于类上
+         （2）METHOD:可以作用于方法上
+         （3）FIELD：可以作用于成员变量上
+2.@Retention：描述注解被保留的阶段
+         （1）RetentionPolicy.RUNTIME:被描述的注解，会保留到class字节码文件中，并被JVM读取到
+3.@Documented:描述注解是否被抽取到api文档中
+
+4.@Inherited：描述注解是否被子类继承
+
+在程序中使用（解析）注解：获取注解中定义的属性值
+1.获取注解定义位置的对象（Class，Method，Field）
+2.获取指定注解
+    getAnnotation(Class)
+3.调用注解中抽象方法获取配置的属性值
+
+
+小结：
+1.以后大多数，我们会使用注解，而不是自定义注解
+2.注解给（1）编译器用
+             （2）给解析程序用
+             （3）注解不是程序的一部分，可以理解为标签
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

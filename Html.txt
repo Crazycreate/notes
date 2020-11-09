@@ -1,0 +1,228 @@
+HTML:
+javweb：使用java语言开发基于互联网的项目
+软件架构：
+1.C/S:Client/Server:客户端/服务器端
+*用户在本地有一个客户端程序，在远程有一个服务端程序（QQ,腾讯等）
+*缺点：开发、安装、部署、维护麻烦
+2.B/S：Browser/Server:浏览器/服务器端
+*只需要一个浏览器，用户通过不同的网址（URL),客户访问不同的服务端程序
+优点：开发、安装、部署、维护方便
+缺点：对于硬件要求过高
+
+B/S：Browser/Server:浏览器/服务器端
+资源分类：
+1。静态资源：使用静态网页开发技术发布的资源
+特点：所有用户访问，得到的结果一样，例如：文本，图片，音频，html,CSS,JavaSript
+如果用户请求的是静态资源，那么服务器会直接将静态资源发送给浏览器。浏览器中内置了静态资源的解析引擎，可以展示静态资源
+2.动态资源：使用动态网页开发技术发布的资源
+特点：所有用户访问，得到的结果可能不一样。如：jsp/servlet,php,asp...
+如果用户请求的是动态资源，那么服务器会执行动态资源，转换为静态资源，在发送给浏览器
+
+静态资源：
+Html:用于搭建基础网页，展示页面内容
+CSS:用于美化页面，布局页面
+JavaScript:控制页面的元素，让页面有动态效果
+
+HTML:超文本标记语言
+标记语言：由标签构成的语言。<标签名称>，如：html、xml
+1.标签分为：
+	*围堵标签：有开始标签和结束标签.如：<html></html>
+	*自闭和标签：开始标签和结束标签在一起。如：<br/>（换行）
+	*在开始标签中可以定义属性。属性是由键值对构成，值需要用引号(单双都可)引起来
+	*html不区分大小写，建议使用小写
+2.标签学习
+1文件标签：构成html最基本的标签
+	html:定义一个 HTML 文档
+	head:头标签,用于指定html文档的一些属性。引入外部的资源
+	title:为文档定义一个标题 
+	body:定义文档的主体
+	<!DOCTYPE html>：定义文档类型。
+2.文本标签：和文本有关的标签
+	<!-- 注释内容-->
+	<h1> to <h6>字体加粗，从1-6字体减小
+	<p>：定义一个段落
+	<br/>换行
+	<hr>：显示一条水平线
+	<b>：字体加粗
+	<i>：斜体
+	<font>：字体标签
+		1.定义颜色：目前常用：#FF00FF（00-FF）表示红绿蓝三种颜色配比
+		2.width: width = '20',数值单位，默认为px(像素)
+	<center>:文本居中
+3.图片标签：
+	<img src="image/jiangwai_1.jpg"/>//指定图片的位置
+	相对路径：./：表示当前路径 ../:表示后退上一级路径
+4.列表标签:
+	有序列表：ol li
+	无序列表：ul li
+5.链接标签：
+<a> <a href="http://www.baidu.com">asdsad</a>
+属性：
+	href:指定访问资源的URL(统一资源定位符)
+	target：指定打开资源的方式
+	_self:默认值，在当前页面打开
+	_blank:在空白页面打开
+6.表格标签：
+table:定义表格
+	width:宽度
+	border:边框
+	cellpadding：边框
+	cellspacing：定义单元格间的距离
+	bgcolor:背景色
+tr：定义行
+td:定义单元格
+	colspan:合并列
+	rowspan:合并行
+th:表头单元格
+
+7.div span结合CSS控制
+span:文本信息在一行展示
+div：会换行
+8.语义化标签：
+<header></header>
+<footer></footer>
+
+
+1.表单标签：form,用于定义表单。可以定义一个范围，范围代表采集用户数据的范围
+属性：
+	action :指定提交数据的URL
+	method:指定提交方式
+	分类：一共七种，2种常见(get,post)
+	get:请求参数会在地址栏中体现；请求参数的长度没有限制
+	post:请求参数不会再地址栏中体现，会封装在请求体中；请求参数的长度有限制
+	表单的数据想要被提交，必须指定其name属性
+
+2.表单项标签：
+	input:可以通过type属性值，改变元素展示的样式
+		type:text:文本输入框(默认)    password:密码输入框
+		radio:单选框
+			注：单选框实现单选必须保证，name属性值应该一致
+			       一般会给每一个单选框提供value属性，指定其被选中后提交的值【】
+			       可以用checked.可以用来指定默认值    
+		 checkbox:复选框
+			一般会给每一个单选框提供value属性，指定其被选中后提交的值【】
+			可以用checked.可以用来指定默认值
+		label:指定输入项的文字描述信息
+		注意：label的for属性一般会和 input 的id属性值对应
+		file：<input type="file" name="file">
+		提交按钮；submit button 图片提交按钮：<input type="image" src="../day06_Html/image/icon_2.jpg">
+		时间：<input type="date">
+        		         <input type="datetime-local">//到分秒
+		取色器：<input type="color" name="color">
+	select:下拉列表
+	子元素：<option>选择的内容</option>
+	textarea:文本域
+	rows:行数 cols:列数
+
+
+CSS:页面的美化和布局控制
+1.概念：Cascading Style Sheets 层叠样式表
+	层叠：多个样式可以作用在同一个html的元素上，同时生效
+
+2.将内容展示和样式控制分离。降低耦合度，让分工协作更加容易。
+3.CSS与html的结合方式
+1.内联样式：
+	在标签内使用style属性指定css代码
+	<div style="color: yellowgreen">死神永生</div>
+2.内部样式
+在head标签内，定义style标签，style标签的标签体内容就是css代码
+<head><style>
+        div{
+            color: gold;
+        }
+    </style></head>
+<div>sssssss</div>
+3.外部样式
+<link rel="stylesheet" href="css/a.css">
+4.CSS语法：
+格式：
+选择器{
+	属性名1：属性值1；
+	属性名2：属性值2；
+	...
+}
+5.选择器：筛选具有相似特征的元素
+	(1)基本选择器
+	1.id选择器：选择具体的id属性值的元素，
+		语法：#id属性值（）
+	2.元素选择器：选择具有相同标签名称的元素
+		id选择器的优先级高于元素选择器
+	3.类选择器，选择具有相同的class属性之的元素
+		语法：.class属性值() 类选择器优先级大于元素选择器
+	(2)扩展选择器：
+	1.选择所有元素：*{}
+	2.并集选择器：选择器1，选择器2{}
+	3.子选择器：筛选选择器1元素下的选择器2元素
+	语法：选择器1 选择器2{}
+	例如:div p{color: blue;}
+	4.父选择器：筛选选择器2的父选择器1
+	语法：选择器1 > 选择器2{}//div > p {color: blue;}
+	5.属性选择器：选择元素名称，属性名=属性值元素
+	语法：元素名称[属性名="属性值"]{}//input[type="text"]{            color: #000;        }
+	6.伪类选择器:选择一些元素具有的状态
+	语法：元素：状态{}//
+	例如： a:link a:hover  a:active a:visited
+6.属性：
+	1.字体，文本
+	color: blue;
+                font-size: 50px;
+                text-align: center;
+                line-height: 50px;
+	2.背景
+	background: url("../day06_Html/image/banner_1.jpg") no-repeat;
+	3.边框
+	border:设置边框，符合属性
+	4.尺寸
+	width:宽度
+	height:高度
+	5.盒子模型：控制布局
+	margin：外边距
+	padding：内边距
+	float:
+
+JavaScript:
+
+
+	
+
+		
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

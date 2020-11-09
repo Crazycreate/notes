@@ -1,0 +1,241 @@
+异常：异常本身是一个类
+1.异常的三种分类：
+（1）Exception 编译异常
+（2）RuntimeException 运行异常
+（3）Error:错误
+
+2.处理异常的关键字：try catch finally throw throws
+throw作用：可以使用throw关键字在指定的方法中抛出指定的异常
+使用格式：
+throw new xxxException("异常产生的原因");
+注：（1）throw要写在方法内部
+（2）throw后new的对象必须是Exception或是Exception的子类
+（3）throw抛出异常后，我们就要处理该异常
+如果是运行异常（RuntimeException）（如空指针，数组越界），可以不处理，交由JVM进行处理（打印异常，【中断程序】）
+如果是编译异常，就必须处理该异常，要么throws,要么try...catch
+
+Objects.requireNonNull();//判断是不是空 用于参数的合法性判断
+
+3.throws
+结构：public static void readFile(String filename) throws FileNotFoundException,IOException{}
+对于编译异常，自己不处理的话，就抛出。
+如果异常间有父子类关系，那么只需要声明父类异常即可。
+
+4.try...catch()//可以执行后续代码
+try {
+            readFile("d:\\a.tt");
+
+        }
+        catch (IOException e){
+            System.out.println("aaaa");
+        }
+e.toString();
+e.printStackTrace();//最详细的描述
+e.getMessage();
+
+5.finally 代码块//作用 定义在try catch中，无法单独出现。【不管有没有异常出现，最后都会执行finally代码块中的内容
+try {
+            readFile("d:\\a.txt");
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        finally {
+            System.out.println("资源释放");
+        }
+    }
+6.一个try多个catch注意事项：
+【catch里边定义的异常变量，如果有子父类关系，那么子类的异常变量必须写在上面，否则报错,】
+因为当出现异常的时候，会从catch中从上往下依次，找能赋值的对象。如果父类写在上面，就不会往下寻找了
+7.如果在方法中定义了finally代码块，不要使用return,因为只会返回finally中的结果
+try {
+            return 10；
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        finally {
+            return 100；//调用程序的时候，会返回100；
+        }
+    }
+8.如果父类抛出了多个异常，子类重写父类方法时，抛出和父类相同的异常或者是父类异常的子类，或者不抛出异常
+父类方法没有抛出异常，则子类重写父类方法时也不可抛出异常。此时子类产生该异常，只能捕获处理（try...catch），不能声明抛出。
+
+9.自定义异常：
+格式：public class DemoMyException extends Exception（）{}
+自定义异常类，必须继承Exception或者RuntimeException
+继承Exception，那么自定义的异常类就是一个编译异常，如果产生了异常，就必须处理异常，要么throws,要么去try..,catch
+若继承RuntimeException，则可以交给虚拟机处理（中断处理）
+
+===========================================
+===========================================
+===========================================
+===========================================
+多线程：
+1.主线程：执行主（main）方法的线程
+单线程程序：java程序中只有一个线程
+执行main方法开始，从上到下依次执行
+JVM执行main方法，main方法会进入栈中，JVM会找操作系统开辟一条main方法通向cpu的执行路径
+cpu就可以通过这个路径来执行main方法，这个路径叫做（主）线程。
+2.创建多线程
+创建Thread的子类（创建一个类去继承Thread）
+步骤：（1）创建一个Thread类的子类
+（2）在Thread类的子类中重写Thread中的run方法，设置线程任务（开启线程后执行的任务）（这是便有两个线程，一个main线程，一个是自己创建的线程）
+（3）创建对象，后调用 start()方法，去执行run()方法，
+java程序属于抢占式调用调度，那个线程优先级高调用哪个，同一优先级随机执行
+
+3.Thread的常用方法
+（1）getName()获取当前线程名称
+（2）currentgetName()返回当前正在执行的线程对象的引用。
+（3）sleep(Long millis)让当前正在执行的线程，暂停相应时间，然后再执行
+
+4.Runable类
+构造线程方法
+
+5.使用Runable接口创建多线程的好处
+1.避免了单继承的局限性
+一个类只能继承一个类，类继承了Thread类就不能继承其他的类，实现了Runable接口，还可以继承其他的类，完成其他的接口。
+2.增强了程序的扩展性，降低了程序的耦合性（解耦）
+实现Runable接口方式，把设置线程任务和开启新线程进行了分离（解耦）
+实现类中，重写了run方法，用来设置线程任务
+创建Thread类对象，调用start方法，用来开启新线程。
+
+6.匿名内部类实现多线程
+
+7.线程安全问题（类似与操作系统中的线程）
+
+8.线程同步(Synchronized)
+
+9.线程池
+（1）构造方法：
+ExecutorService ex = Executors.newFixedThreadPool(3);//构造含有3个线程的线程池
+ Executors.newFixedThreadPool()；返回的是ExecutorService 接口的实现类对象，
+ex.submit(Runable task);//提交一个Runable任务用于执行，//需要对Runable接口进行实现
+ex.shutdown();//销毁线程池，
+
+
+===========================================
+===========================================
+===========================================
+===========================================
+Lambda表达式
+1用.Lambda表达式进行线程创建
+new Thread(()->{
+            System.out.println(Thread.currentThread().getName()+"11111");
+        }
+        ).start();
+    }
+2.Lambda标准表达式：
+（参数列表）->{一些重写方法的代码}
+ 解释：():接口中抽象方法的参数列表，没有参数，则为空，有参数就写出参数列表，多个参数使用逗号隔开
+->:传递的意思，把参数传递给方法体
+{}重写接口抽象方法的方法体。
+【使用相当于把匿名内部类方法进行简化】
+注意：接口中只有一个抽象方法时才可以使用。
+
+
+
+===========================================
+===========================================
+===========================================
+===========================================
+File类
+file:文件 directory:文件夹/目录 path:路径
+过滤器：File[] files = dir.listFiles(new FileFilterImpl());
+public class FileFilterImpl implements FileFilter {
+    @Override
+    public boolean accept(File pathname) {
+        return (pathname.getName().toLowerCase().endsWith(".txt") || pathname.isDirectory());
+    }
+}
+
+===========================================
+===========================================
+===========================================
+===========================================
+I/O流：
+IO流分为字节流和字符流
+【一切文件数据，都是以二进制保存，字节流可以传递任意文件数据】
+1(1).FileOutputStream fos = new FileOutputStream("C:\\Users\\Crazycreate\\Desktop\\za\\a.txt");
+fos.write();// byte[], int
+(2)在文件夹内接着写FileOutputStream fos = new FileOutputStream("C:\\Users\\Crazycreate\\Desktop\\za\\a.txt",true);
+换行写：fos.write("\r\n".getBytes());
+
+2.字节流的文件复制
+FileInputStream fis = new FileInputStream("C:\\Users\\Crazycreate\\Desktop\\za\\TIM截图20200812125803.png");
+FileOutputStream fos = new FileOutputStream("C:\\Users\\Crazycreate\\Desktop\\za\\hhhh\\TIM截图20200812125803.png");
+可以一个字节一个字节的流入
+
+字符流（读入的是一个个的字符，可以读入中文）
+3.FileReader fr = new FileReader("C:\\Users\\Crazycreate\\Desktop\\za\\a.txt",true);//true表示接着续写
+4.write：写的时候，把数据写入内存缓冲区中，在通过flush()，把内存缓存区中的数据，刷新到文件中去。
+void write()//char[] String
+
+
+5.Properties集合:
+Properties 类表示一个持久的属性集。Properties可以保存在流中或在流中加载。
+Properties集合是唯一一个的IO流相结合的集合
+可以使用Properties中的store方法，把集合中的的临时数据，持久化写入到硬盘中存储
+可以使用load方法，把硬盘中保存的文件（键值对）写入集合中使用
+
+Properties prop = new Properties();
+prop.setProperty("a","1");
+Set<String> s = prop.stringPropertyNames();
+
+prop.store()//可以传字节流，也可传字符流
+
+prop.load()//读取文件中的键值对 用#注释后，不再读入
+
+
+6.缓冲流：(增加缓冲区的原因是提高写入效率，把字节读入缓冲区中，一并进入内存中)
+（1）字节缓冲输出流
+FileOutputStream fos = new FileOutputStream("C:\\Users\\Crazycreate\\Desktop\\za\\1.txt");
+BufferedOutputStream bos = new BufferedOutputStream(fos);
+bos.write();
+注意：        //int len = 0;//                                      【这时的len时对应的字节数】
+//        while((len = bis.read()) != -1){
+//            System.out.println( len);
+//        }
+//        System.out.println((char)97);
+        byte[] bytes = new byte[1024];
+        int len = 0;//                                                【 这时的len记录的是每次读取的有效个数】
+        while ((len = bis.read(bytes)) != -1){
+            System.out.println(new String(bytes,0,len));
+        }
+
+（2）字符缓存流
+
+7.编码表：生活中的文字和计算机中的二进制的对应规则。
+
+8.转换流：
+InputStreamReader isr = new InputStreamReader(new FileInputStream("C:\\Users\\Crazycreate\\Desktop\\za\\a.txt"),"GBK");输入转换流
+OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("C:\\Users\\Crazycreate\\Desktop\\za\\a.txt"),"GBK");输出转换流
+
+9.序列化与反序列化：序列化，把对象读入文件中，反序列化，把文件中的对象读出来
+ 使用序列化时，定义的对象需要实现
+public class Person implements Serializable{}
+
+（2）注：static关键字 静态关键字优于非静态加载到内存当中去，【被static修饰的成员变量不能被序列化】，序列化的都是对象
+如果不想让对象中的成员序列化，则使用transient关键字
+（3）private static final long serialVersionUID = 1L;  把序列号写死
+
+10.打印流：
+PrintStream 继承自 OutputStream
+特有的方法print println 写入多少就是多少
+构造方法
+PrintStream(File file):输出目的地是文件
+PrintStream (OutputStream out) 输出目的地是一个字节输出流
+PrintStream (String filename)输出目的地是一个文件路径
+
+
+
+
+
+
+
+
+
+
+
+
+
