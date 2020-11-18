@@ -44,7 +44,7 @@ System类
 
 StringBuilder类
 1.String类字符串常量；他们的值在创建之后不能更改。字符串的底层是一个被final修饰的数组，不能改变，是一个
-常量。
+常量。【给一个已有字符串"abcd"第二次赋值成"abcedl"，不是在原内存地址上修改数据，而是重新指向一个新对象，新地址】
 2.StringBuilder类 字符串缓冲区，可以提高字符串的操作效率(看成一个长度可变的字符串)，底层也是一个数组，但是
 是没有被final修饰，可以改变长度
 StringBuilder在内存中始终只有一个数组，占用空间少，效率高，如果超出了StringBuilder的容量，会自动扩容。
@@ -57,6 +57,20 @@ StringBuilder bu2 = new StringBuffer("aaaa");
 (2)String--->StringBuilder, StringBuilder(String str)构造一个字符串生成器，并初始化指定字符串中的内容；
 StringBuilder--->String public String toString();将当前的StringBuilder对象转化成String对象。
 bu.toString();
+
+StringBuffer 和 StringBuilder 的 3 个区别:
+*线程安全，StringBuilder：线程不安全。因为StringBuffer的所有公开方法都是+synchronized+修饰的，
+而+StringBuilder+并没有+synchronized+修饰。
+*StringBuffer+每次获取+toString+都会直接使用缓存区的+toStringCache+值来构造一个字符串。
++而+StringBuilder+则每次都需要复制一次字符数组，再构造一个字符串。
+*StringBuilder+的性能要远大于+StringBuffer
+所以，StringBuffer+适用于用在多线程操作同一个+StringBuffer+的场景，如果是单线程场合+StringBuilder+更适合。
+
+
+java传递的参数：总结就是基本数据类型传递的是形参，形参不影响实参；引用数据类型传递的是地址，形参在方法内被改变，
+实参也会改变，若在方法内实例化了同名对象，即产生了新的地址，对这个同名对象的改变，由于地址不一样，所以不影响原来的对象
+
+
 
 包装类：
 1.基本数据类型的数据，使用非常方便，但是没有对应方法进行操作这些数据，所以我们可以使用一个类，把基本数据

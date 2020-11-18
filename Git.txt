@@ -86,8 +86,10 @@ git fetch origin(https://github.com/Crazycreate/javaWeb.git) master//仅仅是�
 git fetch [远程库地址别名][远程分支名]
 git merge origin/master // git merge [远程库地址别名/远程分支名]
 
-
-
+git push 不成功的问题解决：
+1.如我在Github新建一个仓库，写了License，然后把本地一个写了很久仓库上传。这时会发现 github 的仓库和本地的没有一个共同的  commit  
+所以  git  不让提交，认为是写错了  origin  ，如果开发者确定是这个 origin 就可以使用  --allow-unrelated-histories  告诉 git 自己确定
+git pull origin master --allow-unrelated-histories 
 
 
 

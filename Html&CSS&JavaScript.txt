@@ -280,6 +280,19 @@ var ss = "alert(999)";
 eval(ss);
 
 
+DOM:
+功能:控制Html文档的内容
+代码：获取页面标签（元素）对象：Element
+document.getElementById("image");//通过元素id获取元素对象
+操作Element对象：
+	（1）修改属性值：
+		image.src="....."
+	（2）修改标签体内容：
+		title.innerHTML = "ddddddddddddddddddddd";//使用innerHTML修改标签体内容。
+	    	
+
+
+
 
 
 

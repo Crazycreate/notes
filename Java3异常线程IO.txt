@@ -89,14 +89,14 @@ java程序属于抢占式调用调度，那个线程优先级高调用哪个，�
 （2）currentgetName()返回当前正在执行的线程对象的引用。
 （3）sleep(Long millis)让当前正在执行的线程，暂停相应时间，然后再执行
 
-4.Runable类
+4.Runnable类
 构造线程方法
 
-5.使用Runable接口创建多线程的好处
+5.使用Runnable接口创建多线程的好处
 1.避免了单继承的局限性
-一个类只能继承一个类，类继承了Thread类就不能继承其他的类，实现了Runable接口，还可以继承其他的类，完成其他的接口。
+一个类只能继承一个类，类继承了Thread类就不能继承其他的类，实现了Runnable接口，还可以继承其他的类，完成其他的接口。
 2.增强了程序的扩展性，降低了程序的耦合性（解耦）
-实现Runable接口方式，把设置线程任务和开启新线程进行了分离（解耦）
+实现Runnable接口方式，把设置线程任务和开启新线程进行了分离（解耦）
 实现类中，重写了run方法，用来设置线程任务
 创建Thread类对象，调用start方法，用来开启新线程。
 
@@ -110,7 +110,7 @@ java程序属于抢占式调用调度，那个线程优先级高调用哪个，�
 （1）构造方法：
 ExecutorService ex = Executors.newFixedThreadPool(3);//构造含有3个线程的线程池
  Executors.newFixedThreadPool()；返回的是ExecutorService 接口的实现类对象，
-ex.submit(Runable task);//提交一个Runable任务用于执行，//需要对Runable接口进行实现
+ex.submit(Runnable task);//提交一个Runnable任务用于执行，//需要对Runnable接口进行实现
 ex.shutdown();//销毁线程池，
 
 
@@ -208,12 +208,14 @@ bos.write();
 7.编码表：生活中的文字和计算机中的二进制的对应规则。
 
 8.转换流：
+//将字节流转换为字符流的转换流
 InputStreamReader isr = new InputStreamReader(new FileInputStream("C:\\Users\\Crazycreate\\Desktop\\za\\a.txt"),"GBK");输入转换流
 OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("C:\\Users\\Crazycreate\\Desktop\\za\\a.txt"),"GBK");输出转换流
 
 9.序列化与反序列化：序列化，把对象读入文件中，反序列化，把文件中的对象读出来
  使用序列化时，定义的对象需要实现
 public class Person implements Serializable{}
+transient //当使用transient关键字后，不会被序列化
 
 （2）注：static关键字 静态关键字优于非静态加载到内存当中去，【被static修饰的成员变量不能被序列化】，序列化的都是对象
 如果不想让对象中的成员序列化，则使用transient关键字
